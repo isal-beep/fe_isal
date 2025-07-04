@@ -1,8 +1,7 @@
-<!DOCTYPE html>
-<html lang="id">
+<!DOCTYPE html><html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Produk - Online Shop Lee</title>
   <style>
     body {
@@ -10,108 +9,146 @@
       margin: 0;
       background: #f5f9f8;
       color: #1d1d1d;
-    }
+    }header {
+  background-color: #2a817c;
+  color: white;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
-    header {
-      background-color: #2a817c;
-      color: white;
-      padding: 1rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+nav a, .cart-button {
+  color: white;
+  margin: 0 1rem;
+  text-decoration: none;
+  font-weight: bold;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
 
-    nav a {
-      color: white;
-      margin: 0 1rem;
-      text-decoration: none;
-      font-weight: bold;
-    }
+h1 {
+  text-align: center;
+  margin: 1rem;
+  color: #2a817c;
+}
 
-    h1 {
-      text-align: center;
-      margin: 1rem;
-      color: #2a817c;
-    }
+.container {
+  padding: 1rem;
+  max-width: 1000px;
+  margin: auto;
+}
 
-    .container {
-      padding: 1rem;
-      max-width: 1000px;
-      margin: auto;
-    }
+.products {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
 
-    .products {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1rem;
-    }
+.card {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  padding: 1rem;
+  text-align: center;
+}
 
-    .card {
-      background: white;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      padding: 1rem;
-      text-align: center;
-    }
+.card img {
+  max-width: 100%;
+  border-radius: 8px;
+  height: 200px;
+  object-fit: cover;
+}
 
-    .card img {
-      max-width: 100%;
-      border-radius: 8px;
-      height: 200px;
-      object-fit: cover;
-    }
+.btn-cart, .btn-checkout {
+  background-color: #2a817c;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  margin-top: 10px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+}
 
-    .btn-cart, .btn-checkout {
-      background-color: #2a817c;
-      color: white;
-      border: none;
-      padding: 10px 15px;
-      margin-top: 10px;
-      border-radius: 6px;
-      font-size: 14px;
-      cursor: pointer;
-    }
+.btn-cart:hover, .btn-checkout:hover {
+  background-color: #226e69;
+}
 
-    .btn-cart:hover, .btn-checkout:hover {
-      background-color: #226e69;
-    }
+#cart-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 300px;
+  height: 100%;
+  background: white;
+  box-shadow: -2px 0 10px rgba(0,0,0,0.2);
+  padding: 1rem;
+  overflow-y: auto;
+  z-index: 9999;
+}
 
-    footer {
-      text-align: center;
-      margin-top: 2rem;
-      padding: 1rem;
-      background: #eeeeee;
-    }
+#cart-modal h3 {
+  margin-top: 0;
+}
+
+footer {
+  text-align: center;
+  margin-top: 2rem;
+  padding: 1rem;
+  background: #eeeeee;
+}
+
   </style>
 </head>
 <body>
-
   <header>
     <div><strong>Online Shop Lee</strong></div>
     <nav>
       <a href="index.html">Beranda</a>
       <a href="produk.html">Produk</a>
       <a href="tentang.html">Tentang</a>
+      <button class="cart-button" onclick="toggleCart()">🛒 Keranjang (<span id="cart-count">0</span>)</button>
     </nav>
-  </header>
-
-  <h1>Daftar Produk</h1>
+  </header>  <h1>Daftar Produk</h1>
   <div class="container">
-    <button onclick="checkout()" class="btn-checkout">📦 Checkout via WhatsApp</button>
     <div class="products" id="product-list">Memuat produk...</div>
-  </div>
-
-  <footer>
+  </div>  <div id="cart-modal">
+    <h3>Keranjang</h3>
+    <ul id="cart-items"></ul>
+    <p id="total-price"></p>
+    <button class="btn-checkout" onclick="checkout()">Checkout via WhatsApp</button>
+  </div>  <footer>
     &copy; 2025 Lee Online Shop
-  </footer>
-
-  <script>
+  </footer>  <script>
     const API_URL = "https://crud-api-production-1baf.up.railway.app/api/products";
     const cart = [];
 
     function addToCart(product) {
       cart.push(product);
+      updateCartView();
       alert(`🛒 ${product.nama_produk} ditambahkan ke keranjang!`);
+    }
+
+    function toggleCart() {
+      const modal = document.getElementById("cart-modal");
+      modal.style.display = modal.style.display === "block" ? "none" : "block";
+    }
+
+    function updateCartView() {
+      document.getElementById("cart-count").textContent = cart.length;
+      const cartItems = document.getElementById("cart-items");
+      cartItems.innerHTML = "";
+      let total = 0;
+      cart.forEach(p => {
+        total += p.harga;
+        const li = document.createElement("li");
+        li.textContent = `${p.nama_produk} - Rp${p.harga}`;
+        cartItems.appendChild(li);
+      });
+      document.getElementById("total-price").textContent = `Total: Rp${total}`;
     }
 
     function checkout() {
@@ -119,7 +156,6 @@
         alert("Keranjang kosong!");
         return;
       }
-
       const pesan = cart.map(p => `• ${p.nama_produk} - Rp${p.harga}`).join('%0A');
       const total = cart.reduce((t, p) => t + p.harga, 0);
       const message = `Halo, saya ingin memesan:%0A${pesan}%0A%0ATotal: Rp${total}`;
@@ -146,7 +182,5 @@
       .catch(() => {
         document.getElementById("product-list").innerHTML = "Gagal memuat produk.";
       });
-  </script>
-
-</body>
+  </script></body>
 </html>
