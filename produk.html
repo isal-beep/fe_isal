@@ -5,13 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Produk | Online Shop Lee</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      padding-top: 4.5rem; /* agar tidak ketimpa navbar sticky */
+    }
+  </style>
 </head>
 <body class="bg-gradient-to-br from-rose-50 to-white text-gray-800">
 
   <!-- Navbar -->
-  <nav class="bg-white shadow sticky top-0 z-40 px-6 py-4 flex justify-between items-center">
+  <nav class="bg-white shadow fixed top-0 left-0 right-0 z-50 px-6 py-4 flex justify-between items-center">
     <h1 class="text-2xl font-bold text-rose-600">Online Shop Lee</h1>
-    <button onclick="toggleKeranjang()" class="relative">
+    <button onclick="toggleKeranjang()" class="relative text-2xl">
       🛒
       <span id="keranjangCount" class="absolute -top-2 -right-2 bg-rose-500 text-white text-xs px-1 rounded-full">0</span>
     </button>
@@ -98,7 +103,7 @@
       const notif = document.getElementById("notif");
       notif.textContent = msg;
       notif.classList.remove("hidden");
-      setTimeout(() => notif.classList.add("hidden"), 2000);
+      setTimeout(() => notif.classList.add("hidden"), 2500);
     }
 
     document.addEventListener("DOMContentLoaded", ambilProduk);
