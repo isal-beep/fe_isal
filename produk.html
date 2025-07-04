@@ -1,159 +1,111 @@
 <!DOCTYPE html><html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Produk - Online Shop Lee</title>
-  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f7f9fc;
-      margin: 0;
-      padding: 0;
-    }
-    header {
-      background-color: #2e3a59;
-      color: white;
-      padding: 1rem;
+    .cart-item {
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
     }
-    nav a {
-      color: white;
-      margin: 0 10px;
-      text-decoration: none;
-    }
-    .produk-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-      padding: 2rem;
-    }
-    .produk {
-      background-color: white;
-      border-radius: 10px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      padding: 1rem;
-      text-align: center;
-    }
-    .produk img {
-      width: 100%;
-      height: 200px;
-      object-fit: contain;
-      border-radius: 8px;
-    }
-    .keranjang {
-      position: fixed;
-      top: 80px;
-      right: 0;
-      background: white;
-      width: 300px;
-      height: 100vh;
-      box-shadow: -2px 0 10px rgba(0,0,0,0.1);
-      padding: 1rem;
-      display: none;
-      flex-direction: column;
-    }
-    .keranjang.open {
-      display: flex;
-    }
-    #toast {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background-color: #28a745;
-      color: white;
-      padding: 10px 16px;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-      opacity: 0;
-      transition: opacity 0.4s ease;
-      z-index: 9999;
-    }
-    #toast.show {
-      opacity: 1;
+    .cart-item-img {
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+      border-radius: 6px;
     }
   </style>
 </head>
-<body>
-  <header>
-    <h2>Online Shop Lee</h2>
-    <nav>
-      <a href="index.html">Beranda</a>
-      <a href="produk.html">Produk</a>
-      <a href="tentang.html">Tentang</a>
-      <a href="#" onclick="toggleCart()">🛒 (<span id="cart-count">0</span>)</a>
-    </nav>
-  </header>  <div class="produk-container" id="produkList">Memuat produk...</div>  <div class="keranjang" id="keranjang">
-    <h3>Keranjang Belanja</h3>
-    <ul id="cart-items"></ul>
-    <p id="cart-total"></p>
-    <a id="checkoutBtn" href="#" target="_blank" style="background:#25D366; padding:10px; text-align:center; color:white; text-decoration:none; border-radius:5px">Checkout via WhatsApp</a>
-  </div>  <div id="toast" class="toast">Produk ditambahkan</div>  <script>
-    const API_URL = "https://crud-api-production-1baf.up.railway.app/api/products";
-    const produkList = document.getElementById("produkList");
-    const keranjangEl = document.getElementById("keranjang");
-    const cartItems = document.getElementById("cart-items");
-    const cartTotal = document.getElementById("cart-total");
-    const cartCount = document.getElementById("cart-count");
+<body class="bg-blue-50 text-gray-800">
+  <!-- Navbar -->
+  <nav class="bg-white shadow p-4 flex justify-between items-center sticky top-0 z-50">
+    <h1 class="text-xl font-bold text-blue-600">Online Shop Lee</h1>
+    <button onclick="toggleCart()" class="relative">
+      🛒
+      <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs px-1">0</span>
+    </button>
+  </nav>  <!-- Produk Section -->  <main class="max-w-6xl mx-auto p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="produkList">
+    <p>Memuat produk...</p>
+  </main>  <!-- Sidebar Cart -->  <aside id="cartSidebar" class="fixed top-0 right-0 w-80 h-full bg-white shadow-lg p-4 overflow-y-auto transition-transform transform translate-x-full z-40">
+    <h2 class="text-lg font-semibold mb-4">Keranjang</h2>
+    <div id="cartItems"></div>
+    <a id="waLink" target="_blank" class="block mt-4 bg-green-500 text-white px-4 py-2 text-center rounded hover:bg-green-600">Checkout via WhatsApp</a>
+  </aside>  <!-- Notifikasi -->  <div id="notif" class="fixed top-5 right-5 bg-green-500 text-white px-4 py-2 rounded hidden shadow"></div>  <script>
+    const API_URL = 'https://crud-api-production-1baf.up.railway.app/api/products';
+    const produkList = document.getElementById('produkList');
+    const cartItemsEl = document.getElementById('cartItems');
+    const cartSidebar = document.getElementById('cartSidebar');
+    const cartCount = document.getElementById('cart-count');
+    const notif = document.getElementById('notif');
+    const waLink = document.getElementById('waLink');
+
     let cart = [];
 
-    fetch(API_URL)
-      .then(res => res.json())
-      .then(data => {
-        produkList.innerHTML = "";
-        data.forEach(item => {
-          const el = document.createElement("div");
-          el.className = "produk";
-          el.innerHTML = `
-            <img src="${item.gambar}" alt="${item.nama_produk}">
-            <h4>${item.nama_produk}</h4>
-            <p>${item.detail}</p>
-            <strong>Rp ${item.harga.toLocaleString()}</strong><br>
-            <button onclick='addToCart(${JSON.stringify(item)})'>+ Tambah Keranjang</button>
-          `;
-          produkList.appendChild(el);
-        });
-      });
-
-    function addToCart(product) {
-      const exist = cart.find(p => p.id === product.id);
-      if (exist) {
-        exist.qty += 1;
-      } else {
-        cart.push({ ...product, qty: 1 });
-      }
-      updateCartDisplay();
-      showToast(`\"${product.nama_produk}\" ditambahkan ke keranjang`);
-    }
-
-    function updateCartDisplay() {
-      cartItems.innerHTML = "";
-      let total = 0;
-      cart.forEach(item => {
-        total += item.harga * item.qty;
-        const li = document.createElement("li");
-        li.innerHTML = `${item.nama_produk} - Rp ${item.harga.toLocaleString()} x ${item.qty}`;
-        cartItems.appendChild(li);
-      });
-      cartTotal.innerText = `Total: Rp ${total.toLocaleString()}`;
-      cartCount.innerText = cart.length;
-      const pesan = cart.map(p => `- ${p.nama_produk} x${p.qty}`).join("%0A");
-      document.getElementById("checkoutBtn").href = `https://wa.me/6282123525841?text=Halo%20saya%20ingin%20pesan:%0A${pesan}%0ATotal:%20Rp%20${total.toLocaleString()}`;
+    function showNotif(message) {
+      notif.innerText = message;
+      notif.classList.remove('hidden');
+      setTimeout(() => notif.classList.add('hidden'), 2000);
     }
 
     function toggleCart() {
-      keranjangEl.classList.toggle("open");
+      cartSidebar.classList.toggle('translate-x-full');
     }
 
-    function showToast(msg) {
-      const toast = document.getElementById("toast");
-      toast.textContent = msg;
-      toast.classList.add("show");
-      setTimeout(() => {
-        toast.classList.remove("show");
-      }, 2500);
+    function renderCart() {
+      cartItemsEl.innerHTML = '';
+      let textWa = 'Halo, saya ingin memesan:%0A';
+      cart.forEach(item => {
+        textWa += `- ${item.nama_produk} x${item.jumlah} = Rp${item.harga * item.jumlah}\n`;
+        const itemEl = document.createElement('div');
+        itemEl.className = 'cart-item';
+        itemEl.innerHTML = `
+          <img src="${item.gambar}" alt="${item.nama_produk}" class="cart-item-img">
+          <div>
+            <strong>${item.nama_produk}</strong><br>
+            Rp${item.harga.toLocaleString()} x${item.jumlah}
+          </div>
+        `;
+        cartItemsEl.appendChild(itemEl);
+      });
+      cartCount.innerText = cart.reduce((a, b) => a + b.jumlah, 0);
+      waLink.href = `https://wa.me/6282123525841?text=${encodeURIComponent(textWa)}`;
     }
+
+    function tambahKeKeranjang(produk) {
+      const exist = cart.find(i => i.id === produk.id);
+      if (exist) {
+        exist.jumlah++;
+      } else {
+        cart.push({ ...produk, jumlah: 1 });
+      }
+      renderCart();
+      showNotif(`${produk.nama_produk} ditambahkan ke keranjang`);
+    }
+
+    async function loadProduk() {
+      try {
+        const res = await fetch(API_URL);
+        const data = await res.json();
+        if (!Array.isArray(data)) throw new Error('Data produk tidak valid');
+
+        produkList.innerHTML = data.map(p => `
+          <div class="bg-white p-4 rounded-xl shadow hover:shadow-md transition flex flex-col">
+            <img src="${p.gambar}" alt="${p.nama_produk}" class="w-full h-48 object-cover rounded mb-2">
+            <h3 class="font-semibold text-blue-700">${p.nama_produk}</h3>
+            <p class="text-sm text-gray-600">${p.detail}</p>
+            <p class="text-lg text-blue-500 font-bold mt-2">Rp${p.harga.toLocaleString()}</p>
+            <button onclick='tambahKeKeranjang(${JSON.stringify(p)})' class="mt-auto bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-sm">+ Keranjang</button>
+          </div>
+        `).join('');
+      } catch (err) {
+        produkList.innerHTML = '<p class="text-red-500">Gagal memuat produk.</p>';
+        console.error(err);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadProduk);
   </script></body>
 </html>
