@@ -4,36 +4,40 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Lee Online Shop</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #e6f7f7;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 50px 20px;
+      color: #333;
+    }
+    h1 {
+      font-size: 32px;
+      margin-bottom: 10px;
+      color: #1d4e4e;
+    }
+    p {
+      font-size: 18px;
+      margin-bottom: 30px;
+    }
+    a.button {
+      display: inline-block;
+      background-color: #1d4e4e;
+      color: white;
+      padding: 15px 30px;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    a.button:hover {
+      background-color: #163f3f;
+    }
+  </style>
 </head>
-<body class="bg-teal-50 text-gray-800 min-h-screen flex flex-col">
-
-  <!-- Header -->
-  <header class="bg-teal-600 text-white p-4 shadow">
-    <div class="container mx-auto flex justify-between items-center">
-      <h1 class="text-xl font-bold">Lee Online Shop</h1>
-      <nav class="space-x-4">
-        <a href="index.html" class="hover:underline">Beranda</a>
-        <a href="produk.html" class="hover:underline">Produk</a>
-        <a href="tentang.html" class="hover:underline">Tentang</a>
-      </nav>
-    </div>
-  </header>
-
-  <!-- Main -->
-  <main class="flex-grow container mx-auto px-4 py-16 text-center">
-    <h2 class="text-3xl md:text-4xl font-bold text-teal-800 mb-6">Selamat Datang di Lee Online Shop</h2>
-    <p class="text-lg mb-8">Temukan skincare favoritmu di sini dengan harga terjangkau dan kualitas terbaik 💖</p>
-    
-    <a href="produk.html" class="bg-teal-600 hover:bg-teal-700 text-white px-6 py-3 rounded-full font-semibold transition duration-200 inline-block">
-      Lihat Produk
-    </a>
-  </main>
-
-  <!-- Footer -->
-  <footer class="bg-teal-100 text-center text-sm p-4 text-gray-600">
-    &copy; 2025 Lee Online Shop. All rights reserved.
-  </footer>
-
+<body>
+  <h1>Selamat Datang di Lee Online Shop</h1>
+  <p>Temukan skincare favoritmu di sini dengan harga terjangkau dan kualitas terbaik 💖</p>
+  <a href="produk.html" class="button">Lihat Produk</a>
 </body>
 </html>
