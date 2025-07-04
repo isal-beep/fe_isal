@@ -1,46 +1,91 @@
-<!DOCTYPE html><html lang="id">
+<!DOCTYPE html>
+<html lang="id">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Beranda | Online Shop Lee</title>
+  <title>Beranda - Online Shop Lee</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body {
-      padding-top: 4.5rem;
-    }
-  </style>
 </head>
-<body class="bg-gradient-to-br from-rose-50 to-white text-gray-800">
-  <nav class="bg-white shadow fixed top-0 left-0 right-0 z-50 px-6 py-4 flex justify-between items-center">
-    <h1 class="text-2xl font-bold text-rose-600">Online Shop Lee</h1>
-    <a href="produk.html" class="text-rose-500 hover:text-rose-700 font-semibold">Lihat Produk</a>
-  </nav>  <main class="p-6">
-    <section class="mb-10">
-      <h2 class="text-2xl font-bold text-rose-700 mb-4">Selamat Datang di Online Shop Lee!</h2>
-      <p class="text-gray-600 text-lg">Kami menyediakan berbagai produk skincare berkualitas dengan harga terjangkau. Yuk belanja sekarang!</p>
-    </section><section>
-  <h3 class="text-xl font-semibold mb-3">Produk Unggulan</h3>
-  <div id="produkSlider" class="flex gap-4 overflow-x-auto pb-4">
-    <!-- Produk akan ditambahkan dengan JS -->
-  </div>
-</section>
+<body class="bg-gray-50 text-gray-800">
 
-  </main>  <script>
+  <!-- Navbar -->
+  <nav class="bg-white shadow-md sticky top-0 z-40">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <a href="index.html" class="text-2xl font-bold text-rose-600">Online Shop Lee</a>
+      <ul class="flex gap-4 text-sm md:text-base">
+        <li><a href="index.html" class="text-rose-600 font-semibold">Beranda</a></li>
+        <li><a href="produk.html" class="text-gray-600 hover:text-rose-600 transition">Produk</a></li>
+        <li><a href="tentang.html" class="text-gray-600 hover:text-rose-600 transition">Tentang</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="bg-rose-50 py-16">
+    <div class="container mx-auto px-4 text-center">
+      <h1 class="text-3xl md:text-4xl font-bold text-rose-600 mb-4">Selamat Datang di Online Shop Lee</h1>
+      <p class="text-gray-600 mb-6 max-w-2xl mx-auto">Temukan produk skincare terbaik pilihanmu dengan harga terjangkau dan pengiriman cepat!</p>
+      <a href="produk.html" class="bg-rose-600 hover:bg-rose-700 text-white px-6 py-3 rounded-full text-sm font-medium transition">Lihat Produk</a>
+    </div>
+  </section>
+
+  <!-- Produk Pilihan -->
+  <section class="container mx-auto px-4 py-12">
+    <h2 class="text-xl font-semibold text-rose-700 mb-4">Produk Pilihan</h2>
+    <div id="scrollProduk" class="flex gap-4 overflow-x-auto pb-4">
+      <!-- Produk akan dimuat lewat JavaScript -->
+    </div>
+  </section>
+
+  <!-- Fitur -->
+  <section class="bg-white py-12">
+    <div class="container mx-auto px-4 grid md:grid-cols-3 gap-8 text-center">
+      <div>
+        <div class="text-rose-600 text-3xl mb-2">🚚</div>
+        <h3 class="font-semibold text-lg">Pengiriman Cepat</h3>
+        <p class="text-sm text-gray-500">Kurir terpercaya untuk pengiriman cepat dan aman.</p>
+      </div>
+      <div>
+        <div class="text-rose-600 text-3xl mb-2">✅</div>
+        <h3 class="font-semibold text-lg">Produk Original</h3>
+        <p class="text-sm text-gray-500">Kami hanya menjual produk asli dan terjamin kualitasnya.</p>
+      </div>
+      <div>
+        <div class="text-rose-600 text-3xl mb-2">💬</div>
+        <h3 class="font-semibold text-lg">Layanan Responsif</h3>
+        <p class="text-sm text-gray-500">Tim kami siap membantu via WhatsApp kapan saja.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-gray-100 text-center py-6 mt-12 text-sm text-gray-500">
+    &copy; 2025 Online Shop Lee. All rights reserved.
+  </footer>
+
+  <script>
     const API_URL = "https://crud-api-production-1baf.up.railway.app/api/products";
 
-    async function tampilkanProdukUnggulan() {
-      const res = await fetch(API_URL);
-      const data = await res.json();
-      const container = document.getElementById("produkSlider");
-      container.innerHTML = data.slice(0, 5).map(p => `
-        <div class="bg-white min-w-[200px] rounded-xl shadow p-4">
-          <img src="${p.gambar}" class="h-40 w-full object-cover rounded mb-2" />
-          <h4 class="font-semibold text-sm text-rose-600">${p.nama_produk}</h4>
-          <p class="text-xs text-gray-500">Rp${Number(p.harga).toLocaleString('id-ID')}</p>
-        </div>
-      `).join("");
+    async function loadScrollProduk() {
+      const el = document.getElementById("scrollProduk");
+      try {
+        const res = await fetch(API_URL);
+        const data = await res.json();
+
+        el.innerHTML = data.slice(0, 10).map(p => \`
+          <div class="min-w-[220px] bg-white rounded-xl shadow p-3 flex-shrink-0">
+            <img src="\${p.gambar}" class="w-full h-40 object-cover rounded mb-2" alt="\${p.nama_produk}">
+            <h3 class="text-sm font-semibold text-gray-800">\${p.nama_produk}</h3>
+            <p class="text-xs text-gray-500 mb-1">\${p.kategori}</p>
+            <p class="text-rose-600 font-bold text-sm">Rp\${p.harga.toLocaleString('id-ID')}</p>
+          </div>
+        \`).join('');
+      } catch (err) {
+        el.innerHTML = '<p class="text-gray-500">Gagal memuat produk</p>';
+      }
     }
 
-    document.addEventListener("DOMContentLoaded", tampilkanProdukUnggulan);
-  </script></body>
+    document.addEventListener("DOMContentLoaded", loadScrollProduk);
+  </script>
+</body>
 </html>
