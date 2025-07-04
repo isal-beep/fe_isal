@@ -1,119 +1,108 @@
 <!DOCTYPE html><html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Produk - Lee Online Shop</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Produk - Online Shop Lee</title>
   <style>
-    body {
-      background-color: #f8f9fa;
-      color: #343a40;
-    }
-    header, footer {
-      background-color: #ffffff;
-      border-bottom: 1px solid #dee2e6;
-    }
-    .produk-item {
-      border: 1px solid #dee2e6;
-      border-radius: 10px;
-      padding: 15px;
-      background-color: #ffffff;
-      margin-bottom: 20px;
-    }
-    .produk-item img {
-      max-width: 100%;
-      height: auto;
-      border-radius: 8px;
-    }
-    .keranjang {
-      position: fixed;
-      top: 80px;
-      right: 0;
-      width: 300px;
-      height: calc(100% - 100px);
-      overflow-y: auto;
-      background-color: #ffffff;
-      border-left: 1px solid #dee2e6;
-      padding: 15px;
-    }
-    .keranjang img {
-      width: 50px;
-      height: auto;
-      margin-right: 10px;
-    }
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f7fa; }
+    header { background-color: #324960; color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+    nav a { color: white; margin-left: 20px; text-decoration: none; font-weight: bold; }
+    h1 { text-align: center; color: #324960; margin-top: 1rem; }
+    .produk-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; padding: 1rem 2rem; }
+    .produk-card { background: white; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 1rem; text-align: center; }
+    .produk-card img { max-width: 100%; height: 150px; object-fit: cover; border-radius: 8px; }
+    .produk-card h3 { margin: 0.5rem 0; color: #324960; }
+    .produk-card p { margin: 0.2rem 0; color: #666; }
+    .produk-card button { background-color: #2d89ef; color: white; padding: 0.5rem 1rem; border: none; border-radius: 5px; cursor: pointer; }
+    .cart-sidebar { position: fixed; top: 0; right: 0; width: 300px; height: 100vh; background: #fff; box-shadow: -2px 0 10px rgba(0,0,0,0.1); padding: 1rem; z-index: 999; overflow-y: auto; transition: transform 0.3s ease; }
+    .cart-sidebar.hidden { transform: translateX(100%); }
+    .cart-sidebar h3 { margin-top: 0; color: #324960; }
+    .cart-sidebar ul { list-style: none; padding: 0; }
+    .cart-sidebar li { margin-bottom: 0.5rem; display: flex; justify-content: space-between; }
+    .checkout-btn { background: #25d366; color: white; padding: 10px; display: block; margin-top: 10px; text-align: center; border-radius: 5px; text-decoration: none; }
+    footer { text-align: center; padding: 1rem; margin-top: 2rem; background-color: #324960; color: white; }
   </style>
 </head>
-<body>
-  <header class="p-3 d-flex justify-content-between align-items-center">
-    <h4 class="m-0">Lee Online Shop</h4>
+<body>  <header>
+    <div><strong>Online Shop Lee</strong></div>
     <nav>
-      <a href="index.html" class="me-3">Beranda</a>
-      <a href="produk.html" class="me-3 fw-bold">Produk</a>
+      <a href="index.html">Beranda</a>
+      <a href="produk.html">Produk</a>
       <a href="tentang.html">Tentang</a>
+      <a href="#" id="toggleCartBtn">🛒 Keranjang <span id="cartCount">0</span></a>
     </nav>
-  </header>  <main class="container mt-4" style="margin-right: 320px;">
-    <h2 class="mb-4">Daftar Produk</h2>
-    <div id="produk-container" class="row"></div>
-  </main>  <aside class="keranjang">
-    <h5>Keranjang</h5>
-    <ul id="keranjang-list" class="list-unstyled"></ul>
-    <p>Total: <span id="total-harga">Rp 0</span></p>
-    <a id="checkout-wa" href="#" class="btn btn-success w-100" target="_blank">Lanjutkan ke WhatsApp</a>
-  </aside>  <script>
+  </header>  <h1>Daftar Produk</h1>
+  <div class="produk-container" id="produkList">
+    <!-- Produk akan dimuat oleh JS -->
+  </div>  <div id="cartSidebar" class="cart-sidebar hidden">
+    <h3>Keranjang Belanja</h3>
+    <ul id="cartItems"></ul>
+    <div>Total: <span id="cartTotal">Rp 0</span></div>
+    <a id="checkoutBtn" target="_blank" class="checkout-btn">Checkout via WhatsApp</a>
+  </div>  <footer>
+    &copy; 2025 Online Shop Lee. All rights reserved.
+  </footer>  <script>
     const API_URL = "https://crud-api-production-1baf.up.railway.app/api/products";
-    const produkContainer = document.getElementById("produk-container");
-    const keranjangList = document.getElementById("keranjang-list");
-    const totalHargaElem = document.getElementById("total-harga");
-    const checkoutLink = document.getElementById("checkout-wa");
+    const produkList = document.getElementById("produkList");
+    const cartItems = document.getElementById("cartItems");
+    const cartTotal = document.getElementById("cartTotal");
+    const cartCount = document.getElementById("cartCount");
+    const checkoutBtn = document.getElementById("checkoutBtn");
+    const cartSidebar = document.getElementById("cartSidebar");
+    const toggleCartBtn = document.getElementById("toggleCartBtn");
 
-    let keranjang = [];
+    let cart = [];
+
+    toggleCartBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      cartSidebar.classList.toggle("hidden");
+    });
+
+    function formatRupiah(amount) {
+      return "Rp " + amount.toLocaleString("id-ID");
+    }
+
+    function updateCart() {
+      cartItems.innerHTML = "";
+      let total = 0;
+      cart.forEach(item => {
+        const li = document.createElement("li");
+        li.innerHTML = `${item.nama} <span>${formatRupiah(item.harga)} x${item.jumlah}</span>`;
+        cartItems.appendChild(li);
+        total += item.harga * item.jumlah;
+      });
+      cartTotal.textContent = formatRupiah(total);
+      cartCount.textContent = cart.length;
+
+      const message = cart.map(item => `${item.nama} x${item.jumlah}`).join("%0A");
+      checkoutBtn.href = `https://wa.me/6282123525841?text=Halo!%20Saya%20ingin%20memesan:%0A${message}%0ATotal:%20${formatRupiah(total)}`;
+    }
+
+    function addToCart(product) {
+      const existing = cart.find(item => item.id === product.id);
+      if (existing) {
+        existing.jumlah += 1;
+      } else {
+        cart.push({ id: product.id, nama: product.nama_produk, harga: product.harga, jumlah: 1 });
+      }
+      updateCart();
+    }
 
     fetch(API_URL)
       .then(res => res.json())
       .then(data => {
         data.forEach(produk => {
-          const col = document.createElement("div");
-          col.className = "col-md-4";
-
-          col.innerHTML = `
-            <div class="produk-item">
-              <img src="${produk.gambar}" alt="${produk.nama_produk}">
-              <h5 class="mt-2">${produk.nama_produk}</h5>
-              <p>${produk.detail}</p>
-              <p><strong>Rp ${produk.harga.toLocaleString("id-ID")}</strong></p>
-              <button class="btn btn-primary" onclick='tambahKeranjang(${JSON.stringify(produk)})'>+ Tambah Keranjang</button>
-            </div>
+          const card = document.createElement("div");
+          card.className = "produk-card";
+          card.innerHTML = `
+            <img src="${produk.gambar}" alt="${produk.nama_produk}" />
+            <h3>${produk.nama_produk}</h3>
+            <p>${produk.kategori}</p>
+            <p>${formatRupiah(produk.harga)}</p>
+            <button onclick='addToCart(${JSON.stringify(produk)})'>+ Tambah Keranjang</button>
           `;
-
-          produkContainer.appendChild(col);
+          produkList.appendChild(card);
         });
       });
-
-    function tambahKeranjang(produk) {
-      keranjang.push(produk);
-      renderKeranjang();
-    }
-
-    function renderKeranjang() {
-      keranjangList.innerHTML = "";
-      let total = 0;
-
-      keranjang.forEach(item => {
-        total += item.harga;
-        const li = document.createElement("li");
-        li.className = "d-flex align-items-center mb-2";
-        li.innerHTML = `
-          <img src="${item.gambar}" alt="${item.nama_produk}" />
-          <span>${item.nama_produk}</span>
-          <span class="ms-auto">Rp ${item.harga.toLocaleString("id-ID")}</span>
-        `;
-        keranjangList.appendChild(li);
-      });
-
-      totalHargaElem.textContent = `Rp ${total.toLocaleString("id-ID")}`;
-
-      const pesan = keranjang.map(item => `- ${item.nama_produk} (Rp ${item.harga.toLocaleString("id-ID")})`).join("%0A");
-      checkoutLink.href = `https://wa.me/6282123525841?text=Halo%20saya%20ingin%20checkout%20produk:%0A${pesan}%0ATotal:%20Rp%20${total.toLocaleString("id-ID")}`;
-    }
   </script></body>
 </html>
