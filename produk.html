@@ -1,96 +1,201 @@
 <!DOCTYPE html><html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Produk - Online Shop Lee</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Produk - Lee Online Shop</title>
+  <link rel="stylesheet" href="style.css" />
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f7fa; }
-    header { background-color: #324960; color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
-    nav a { color: white; margin-left: 20px; text-decoration: none; font-weight: bold; }
-    h1 { text-align: center; color: #324960; margin-top: 1rem; }
-    .produk-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; padding: 1rem 2rem; }
-    .produk-card { background: white; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 1rem; text-align: center; }
-    .produk-card img { max-width: 100%; height: 150px; object-fit: cover; border-radius: 8px; }
-    .produk-card h3 { margin: 0.5rem 0; color: #324960; }
-    .produk-card p { margin: 0.2rem 0; color: #666; }
-    .produk-card button { background-color: #2d89ef; color: white; padding: 0.5rem 1rem; border: none; border-radius: 5px; cursor: pointer; }
-    .cart-sidebar { position: fixed; top: 0; right: 0; width: 300px; height: 100vh; background: #fff; box-shadow: -2px 0 10px rgba(0,0,0,0.1); padding: 1rem; z-index: 999; overflow-y: auto; transition: transform 0.3s ease; }
-    .cart-sidebar.hidden { transform: translateX(100%); }
-    .cart-sidebar h3 { margin-top: 0; color: #324960; }
-    .cart-sidebar ul { list-style: none; padding: 0; }
-    .cart-sidebar li { margin-bottom: 0.5rem; display: flex; justify-content: space-between; }
-    .checkout-btn { background: #25d366; color: white; padding: 10px; display: block; margin-top: 10px; text-align: center; border-radius: 5px; text-decoration: none; }
-    footer { text-align: center; padding: 1rem; margin-top: 2rem; background-color: #324960; color: white; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f5f8fa;
+      margin: 0;
+      padding: 0;
+    }
+    header, footer {
+      background: #fff;
+      padding: 16px 24px;
+      box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+    }
+    header h1 {
+      color: #2c3e50;
+      margin: 0;
+    }
+    nav a {
+      margin: 0 10px;
+      color: #34495e;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .produk-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
+      padding: 20px;
+    }
+    .produk-card {
+      background: #fff;
+      padding: 12px;
+      border-radius: 8px;
+      box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .produk-card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 6px;
+    }
+    .produk-card h3 {
+      margin: 10px 0 5px;
+      font-size: 16px;
+      text-align: center;
+    }
+    .produk-card p {
+      margin: 0;
+      font-size: 14px;
+      text-align: center;
+    }
+    .produk-card button {
+      margin-top: 8px;
+      background: #3498db;
+      border: none;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    #cart-sidebar {
+      position: fixed;
+      right: -100%;
+      top: 0;
+      width: 300px;
+      height: 100vh;
+      background: white;
+      box-shadow: -2px 0 6px rgba(0,0,0,0.2);
+      padding: 20px;
+      transition: right 0.3s ease;
+      z-index: 1000;
+    }
+    #cart-sidebar.open {
+      right: 0;
+    }
+    .cart-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .cart-img {
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+      margin-right: 10px;
+      border-radius: 4px;
+    }
+    .cart-details {
+      flex: 1;
+    }
+    .cart-footer {
+      margin-top: 16px;
+    }
+    .whatsapp-btn {
+      display: block;
+      background: #25D366;
+      color: white;
+      text-align: center;
+      padding: 10px;
+      text-decoration: none;
+      border-radius: 6px;
+    }
+    .cart-toggle-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #2c3e50;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      cursor: pointer;
+      z-index: 1001;
+    }
   </style>
 </head>
-<body>  <header>
-    <div><strong>Online Shop Lee</strong></div>
+<body>
+  <header>
+    <h1>Online Shop Lee</h1>
     <nav>
       <a href="index.html">Beranda</a>
       <a href="produk.html">Produk</a>
       <a href="tentang.html">Tentang</a>
-      <a href="#" id="toggleCartBtn">🛒 Keranjang <span id="cartCount">0</span></a>
     </nav>
-  </header>  <h1>Daftar Produk</h1>
-  <div class="produk-container" id="produkList">
-    <!-- Produk akan dimuat oleh JS -->
-  </div>  <div id="cartSidebar" class="cart-sidebar hidden">
+  </header>  <button class="cart-toggle-btn" onclick="toggleCart()">
+    🛒
+  </button>  <main>
+    <section class="produk-container" id="produk-list">
+      Memuat produk...
+    </section>
+  </main>  <aside id="cart-sidebar">
     <h3>Keranjang Belanja</h3>
-    <ul id="cartItems"></ul>
-    <div>Total: <span id="cartTotal">Rp 0</span></div>
-    <a id="checkoutBtn" target="_blank" class="checkout-btn">Checkout via WhatsApp</a>
-  </div>  <footer>
-    &copy; 2025 Online Shop Lee. All rights reserved.
+    <div id="cart-items"></div>
+    <div class="cart-footer">
+      <p id="total-harga">Total: Rp 0</p>
+      <a id="wa-checkout" href="#" class="whatsapp-btn">Checkout via WhatsApp</a>
+    </div>
+  </aside>  <footer>
+    <p>&copy; 2025 Lee Online Shop. Semua hak dilindungi.</p>
   </footer>  <script>
     const API_URL = "https://crud-api-production-1baf.up.railway.app/api/products";
-    const produkList = document.getElementById("produkList");
-    const cartItems = document.getElementById("cartItems");
-    const cartTotal = document.getElementById("cartTotal");
-    const cartCount = document.getElementById("cartCount");
-    const checkoutBtn = document.getElementById("checkoutBtn");
-    const cartSidebar = document.getElementById("cartSidebar");
-    const toggleCartBtn = document.getElementById("toggleCartBtn");
+    const produkList = document.getElementById("produk-list");
+    const cartItemsContainer = document.getElementById("cart-items");
+    const totalHargaElem = document.getElementById("total-harga");
+    const waCheckoutBtn = document.getElementById("wa-checkout");
+    let keranjang = [];
 
-    let cart = [];
-
-    toggleCartBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      cartSidebar.classList.toggle("hidden");
-    });
-
-    function formatRupiah(amount) {
-      return "Rp " + amount.toLocaleString("id-ID");
+    function formatRupiah(num) {
+      return "Rp " + num.toLocaleString("id-ID");
     }
 
-    function updateCart() {
-      cartItems.innerHTML = "";
+    function renderKeranjang() {
+      cartItemsContainer.innerHTML = "";
       let total = 0;
-      cart.forEach(item => {
-        const li = document.createElement("li");
-        li.innerHTML = `${item.nama} <span>${formatRupiah(item.harga)} x${item.jumlah}</span>`;
-        cartItems.appendChild(li);
+      keranjang.forEach(item => {
         total += item.harga * item.jumlah;
+        cartItemsContainer.innerHTML += `
+          <div class="cart-item">
+            <img src="${item.gambar}" alt="${item.nama_produk}" class="cart-img" />
+            <div class="cart-details">
+              <p>${item.nama_produk}</p>
+              <p>${formatRupiah(item.harga)} x ${item.jumlah}</p>
+            </div>
+          </div>
+        `;
       });
-      cartTotal.textContent = formatRupiah(total);
-      cartCount.textContent = cart.length;
-
-      const message = cart.map(item => `${item.nama} x${item.jumlah}`).join("%0A");
-      checkoutBtn.href = `https://wa.me/6282123525841?text=Halo!%20Saya%20ingin%20memesan:%0A${message}%0ATotal:%20${formatRupiah(total)}`;
+      totalHargaElem.textContent = `Total: ${formatRupiah(total)}`;
+      const pesan = keranjang.map(item => `- ${item.nama_produk} x${item.jumlah}`).join("%0A");
+      waCheckoutBtn.href = `https://wa.me/6282123525841?text=Halo%20saya%20ingin%20checkout%20produk:%0A${pesan}%0ATotal:%20${formatRupiah(total)}`;
     }
 
-    function addToCart(product) {
-      const existing = cart.find(item => item.id === product.id);
-      if (existing) {
-        existing.jumlah += 1;
+    function tambahKeKeranjang(produk) {
+      const ditemukan = keranjang.find(p => p.id === produk.id);
+      if (ditemukan) {
+        ditemukan.jumlah++;
       } else {
-        cart.push({ id: product.id, nama: product.nama_produk, harga: product.harga, jumlah: 1 });
+        keranjang.push({ ...produk, jumlah: 1 });
       }
-      updateCart();
+      renderKeranjang();
+    }
+
+    function toggleCart() {
+      document.getElementById("cart-sidebar").classList.toggle("open");
     }
 
     fetch(API_URL)
       .then(res => res.json())
       .then(data => {
+        produkList.innerHTML = "";
         data.forEach(produk => {
           const card = document.createElement("div");
           card.className = "produk-card";
@@ -99,10 +204,14 @@
             <h3>${produk.nama_produk}</h3>
             <p>${produk.kategori}</p>
             <p>${formatRupiah(produk.harga)}</p>
-            <button onclick='addToCart(${JSON.stringify(produk)})'>+ Tambah Keranjang</button>
+            <button onclick='tambahKeKeranjang(${JSON.stringify(produk)})'>+ Tambah Keranjang</button>
           `;
           produkList.appendChild(card);
         });
+      })
+      .catch(err => {
+        produkList.innerHTML = "Gagal memuat produk.";
+        console.error(err);
       });
   </script></body>
 </html>
