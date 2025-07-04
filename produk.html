@@ -3,110 +3,143 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Produk | Online Shop Lee</title>
+  <title>Produk - Online Shop Lee</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
   <style>
-    body {
-      padding-top: 4.5rem; /* agar tidak ketimpa navbar sticky */
+    .keranjang-notif {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      background: #f43f5e;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 9999px;
+      display: none;
+      z-index: 50;
     }
   </style>
 </head>
-<body class="bg-gradient-to-br from-rose-50 to-white text-gray-800">
-
-  <!-- Navbar -->
-  <nav class="bg-white shadow fixed top-0 left-0 right-0 z-50 px-6 py-4 flex justify-between items-center">
-    <h1 class="text-2xl font-bold text-rose-600">Online Shop Lee</h1>
-    <button onclick="toggleKeranjang()" class="relative text-2xl">
-      🛒
-      <span id="keranjangCount" class="absolute -top-2 -right-2 bg-rose-500 text-white text-xs px-1 rounded-full">0</span>
-    </button>
-  </nav>
-
-  <!-- Produk List -->
-  <main class="p-6">
-    <h2 class="text-xl font-semibold mb-4">Semua Produk</h2>
-    <div id="produkList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
-  </main>
-
-  <!-- Sidebar Keranjang -->
-  <aside id="sidebarKeranjang" class="fixed top-0 right-0 h-full w-80 bg-white shadow-lg border-l border-gray-200 transform translate-x-full transition-transform duration-300 z-50 overflow-y-auto">
-    <div class="p-4 flex justify-between items-center border-b">
-      <h2 class="text-lg font-semibold">Keranjang</h2>
-      <button onclick="toggleKeranjang()" class="text-gray-500 text-xl">×</button>
-    </div>
-    <div id="keranjangList" class="p-4 space-y-4"></div>
-    <div class="p-4 border-t">
-      <a href="https://wa.me/6282123525841" target="_blank"
-         class="block w-full text-center bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-medium transition">Checkout via WhatsApp</a>
-    </div>
-  </aside>
+<body class="bg-gray-50 text-gray-800">
 
   <!-- Notifikasi -->
-  <div id="notif" class="fixed top-5 right-5 bg-green-500 text-white px-4 py-2 rounded shadow-lg hidden z-[100]">
-    Produk masuk ke keranjang!
+  <div id="notif" class="keranjang-notif"></div>
+
+  <!-- Navbar -->
+  <nav class="bg-white shadow-md sticky top-0 z-40">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <a href="index.html" class="text-2xl font-bold text-rose-600">Online Shop Lee</a>
+      <ul class="flex gap-4 text-sm md:text-base">
+        <li><a href="index.html" class="text-gray-600 hover:text-rose-600 transition">Beranda</a></li>
+        <li><a href="produk.html" class="text-rose-600 font-semibold">Produk</a></li>
+        <li><a href="tentang.html" class="text-gray-600 hover:text-rose-600 transition">Tentang</a></li>
+      </ul>
+      <button onclick="toggleSidebar()" class="relative text-rose-600 hover:text-rose-800">
+        🛒
+        <span id="cart-count" class="absolute -top-2 -right-2 bg-rose-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">0</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Produk -->
+  <section class="container mx-auto px-4 py-8">
+    <h2 class="text-2xl font-bold mb-6 text-rose-700">Produk Kami</h2>
+    <div id="produkList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"></div>
+  </section>
+
+  <!-- Sidebar Keranjang -->
+  <div id="sidebar" class="fixed top-0 right-0 w-80 h-full bg-white shadow-lg border-l transform translate-x-full transition-transform duration-300 z-50">
+    <div class="p-4 border-b flex justify-between items-center">
+      <h3 class="text-lg font-semibold text-rose-600">Keranjang</h3>
+      <button onclick="toggleSidebar()" class="text-sm text-gray-500 hover:text-rose-600">Tutup ✕</button>
+    </div>
+    <div id="keranjang" class="p-4 space-y-4 overflow-y-auto h-[80%]"></div>
+    <div class="p-4 border-t">
+      <a id="checkoutBtn" href="#" class="block w-full text-center bg-rose-600 hover:bg-rose-700 text-white py-2 rounded-full">Checkout via WhatsApp</a>
+    </div>
   </div>
 
-  <!-- Script -->
   <script>
     const API_URL = "https://crud-api-production-1baf.up.railway.app/api/products";
     let keranjang = [];
 
-    async function ambilProduk() {
-      const res = await fetch(API_URL);
-      const data = await res.json();
-      const container = document.getElementById("produkList");
-
-      container.innerHTML = data.map(p => `
-        <div class="bg-white rounded-xl shadow p-4 flex flex-col">
-          <img src="${p.gambar}" alt="${p.nama_produk}" class="h-48 object-cover rounded mb-2">
-          <h3 class="font-semibold text-lg text-rose-600">${p.nama_produk}</h3>
-          <p class="text-sm text-gray-500 mb-1">${p.kategori}</p>
-          <p class="text-rose-700 font-bold text-lg mb-3">Rp${Number(p.harga).toLocaleString('id-ID')}</p>
-          <button onclick='tambahKeKeranjang(${JSON.stringify(p)})' class="mt-auto bg-rose-500 hover:bg-rose-600 text-white px-3 py-1 rounded-lg">+ Keranjang</button>
-        </div>
-      `).join("");
-    }
-
-    function tambahKeKeranjang(produk) {
-      keranjang.push(produk);
-      updateKeranjangUI();
-      showNotif("Produk masuk ke keranjang!");
-    }
-
-    function updateKeranjangUI() {
-      const list = document.getElementById("keranjangList");
-      const count = document.getElementById("keranjangCount");
-
-      if (keranjang.length === 0) {
-        list.innerHTML = '<p class="text-gray-400 text-center">Belum ada produk</p>';
-      } else {
-        list.innerHTML = keranjang.map(p => `
-          <div class="flex gap-3 items-center border-b pb-3">
-            <img src="${p.gambar}" alt="${p.nama_produk}" class="w-14 h-14 object-cover rounded">
-            <div class="flex-1">
-              <p class="font-medium text-sm">${p.nama_produk}</p>
-              <p class="text-xs text-gray-500">Rp${Number(p.harga).toLocaleString('id-ID')}</p>
-            </div>
-          </div>
-        `).join("");
-      }
-
-      count.textContent = keranjang.length;
-    }
-
-    function toggleKeranjang() {
-      const sidebar = document.getElementById("sidebarKeranjang");
-      sidebar.classList.toggle("translate-x-full");
-    }
-
     function showNotif(msg) {
       const notif = document.getElementById("notif");
       notif.textContent = msg;
-      notif.classList.remove("hidden");
-      setTimeout(() => notif.classList.add("hidden"), 2500);
+      notif.style.display = "block";
+      setTimeout(() => {
+        notif.style.display = "none";
+      }, 2000);
     }
 
-    document.addEventListener("DOMContentLoaded", ambilProduk);
+    function toggleSidebar() {
+      const sidebar = document.getElementById("sidebar");
+      sidebar.classList.toggle("translate-x-full");
+    }
+
+    function renderKeranjang() {
+      const el = document.getElementById("keranjang");
+      const count = document.getElementById("cart-count");
+      count.textContent = keranjang.length;
+
+      if (keranjang.length === 0) {
+        el.innerHTML = '<p class="text-gray-500 text-center">Keranjang kosong</p>';
+        document.getElementById('checkoutBtn').href = '#';
+        return;
+      }
+
+      let isi = '';
+      let waText = 'Halo, saya ingin memesan:%0A';
+
+      keranjang.forEach(item => {
+        isi += `
+          <div class="flex gap-4 items-center">
+            <img src="${item.gambar}" class="w-16 h-16 rounded object-cover border" />
+            <div>
+              <p class="font-semibold text-gray-700">${item.nama_produk}</p>
+              <p class="text-sm text-gray-500">Rp${item.harga.toLocaleString('id-ID')}</p>
+            </div>
+          </div>
+        `;
+        waText += `- ${item.nama_produk} (Rp${item.harga.toLocaleString('id-ID')})%0A`;
+      });
+
+      document.getElementById("checkoutBtn").href = `https://wa.me/6282123525841?text=${waText}`;
+      el.innerHTML = isi;
+    }
+
+    async function loadProduk() {
+      const container = document.getElementById("produkList");
+      container.innerHTML = '<p>Memuat produk...</p>';
+
+      try {
+        const res = await fetch(API_URL);
+        const data = await res.json();
+
+        container.innerHTML = data.map(p => `
+          <div class="bg-white rounded-2xl shadow p-4 flex flex-col">
+            <img src="${p.gambar}" class="h-48 w-full object-cover rounded mb-2" alt="${p.nama_produk}">
+            <h3 class="text-lg font-semibold text-gray-800">${p.nama_produk}</h3>
+            <p class="text-sm text-gray-500">${p.detail}</p>
+            <p class="mt-auto text-rose-600 font-bold">Rp${p.harga.toLocaleString('id-ID')}</p>
+            <button onclick='tambahKeranjang(${JSON.stringify(p)})' class="mt-2 bg-rose-600 hover:bg-rose-700 text-white py-1.5 rounded-full text-sm">+ Tambah ke Keranjang</button>
+          </div>
+        `).join('');
+      } catch (err) {
+        container.innerHTML = '<p class="text-red-500">Gagal memuat produk</p>';
+      }
+    }
+
+    function tambahKeranjang(p) {
+      keranjang.push(p);
+      renderKeranjang();
+      showNotif(`${p.nama_produk} ditambahkan ke keranjang`);
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      loadProduk();
+      renderKeranjang();
+    });
   </script>
 </body>
 </html>
