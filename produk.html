@@ -1,74 +1,152 @@
-<!DOCTYPE html><html lang="id">
+<!DOCTYPE html>
+<html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Online Shop Lee - Produk</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Produk - Online Shop Lee</title>
   <style>
     body {
-      font-family: 'Inter', sans-serif;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background: #f5f9f8;
+      color: #1d1d1d;
+    }
+
+    header {
+      background-color: #2a817c;
+      color: white;
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    nav a {
+      color: white;
+      margin: 0 1rem;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    h1 {
+      text-align: center;
+      margin: 1rem;
+      color: #2a817c;
+    }
+
+    .container {
+      padding: 1rem;
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+    }
+
+    .card {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .card img {
+      max-width: 100%;
+      border-radius: 8px;
+      height: 200px;
+      object-fit: cover;
+    }
+
+    .btn-cart, .btn-checkout {
+      background-color: #2a817c;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      margin-top: 10px;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .btn-cart:hover, .btn-checkout:hover {
+      background-color: #226e69;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 2rem;
+      padding: 1rem;
+      background: #eeeeee;
     }
   </style>
 </head>
-<body class="bg-gradient-to-br from-teal-50 via-white to-blue-50 text-gray-800 min-h-screen">
-  <header class="bg-white shadow sticky top-0 z-10">
-    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-      <h1 class="text-2xl font-bold text-teal-700">Online Shop <span class="text-blue-600">Lee</span></h1>
-      <nav class="space-x-4">
-        <a href="index.html" class="text-gray-600 hover:text-teal-600">Beranda</a>
-        <a href="produk.html" class="text-teal-700 font-semibold border-b-2 border-teal-700">Produk</a>
-        <a href="tentang.html" class="text-gray-600 hover:text-teal-600">Tentang</a>
-      </nav>
-    </div>
-  </header>  <main class="container mx-auto px-4 py-10">
-    <h2 class="text-3xl font-bold text-center text-teal-800 mb-10">Daftar Produk</h2>
-    <div id="produkList" class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-      <!-- Produk akan dimuat di sini -->
-    </div>
-  </main>  <script>
-    const API_URL = 'https://crud-api-production-1baf.up.railway.app/api/products';
+<body>
 
-    async function loadProduk() {
-      const produkList = document.getElementById('produkList');
-      produkList.innerHTML = '<p class="text-center col-span-full text-gray-500">Memuat produk...</p>';
+  <header>
+    <div><strong>Online Shop Lee</strong></div>
+    <nav>
+      <a href="index.html">Beranda</a>
+      <a href="produk.html">Produk</a>
+      <a href="tentang.html">Tentang</a>
+    </nav>
+  </header>
 
-      try {
-        const res = await fetch(API_URL);
-        const data = await res.json();
+  <h1>Daftar Produk</h1>
+  <div class="container">
+    <button onclick="checkout()" class="btn-checkout">📦 Checkout via WhatsApp</button>
+    <div class="products" id="product-list">Memuat produk...</div>
+  </div>
 
-        if (!Array.isArray(data) || data.length === 0) {
-          produkList.innerHTML = '<p class="text-center col-span-full text-gray-500">Produk belum tersedia.</p>';
-          return;
-        }
+  <footer>
+    &copy; 2025 Lee Online Shop
+  </footer>
 
-        produkList.innerHTML = data.map(p => `
-          <div class="bg-white shadow-md rounded-xl overflow-hidden hover:shadow-xl transition">
-            <img src="${p.gambar}" alt="${p.nama_produk}" class="w-full h-56 object-cover">
-            <div class="p-4">
-              <h3 class="text-lg font-semibold text-teal-700">${p.nama_produk}</h3>
-              <p class="text-sm text-gray-500 mb-2">${p.kategori}</p>
-              <p class="text-gray-700 text-sm mb-2">${p.detail}</p>
-              <p class="text-lg font-bold text-blue-600 mb-4">Rp${Number(p.harga).toLocaleString('id-ID')}</p>
-              <button onclick="checkoutWhatsApp('${p.nama_produk}', ${p.harga})" class="w-full bg-teal-600 hover:bg-teal-700 text-white py-2 rounded-lg text-sm font-medium">
-                Beli via WhatsApp
-              </button>
-            </div>
-          </div>
-        `).join('');
-      } catch (err) {
-        produkList.innerHTML = '<p class="text-center col-span-full text-red-500">Gagal memuat produk.</p>';
+  <script>
+    const API_URL = "https://crud-api-production-1baf.up.railway.app/api/products";
+    const cart = [];
+
+    function addToCart(product) {
+      cart.push(product);
+      alert(`🛒 ${product.nama_produk} ditambahkan ke keranjang!`);
+    }
+
+    function checkout() {
+      if (cart.length === 0) {
+        alert("Keranjang kosong!");
+        return;
       }
+
+      const pesan = cart.map(p => `• ${p.nama_produk} - Rp${p.harga}`).join('%0A');
+      const total = cart.reduce((t, p) => t + p.harga, 0);
+      const message = `Halo, saya ingin memesan:%0A${pesan}%0A%0ATotal: Rp${total}`;
+      window.open(`https://wa.me/6282123525841?text=${message}`, "_blank");
     }
 
-    function checkoutWhatsApp(nama, harga) {
-      const pesan = `Halo, saya ingin membeli produk: ${nama} dengan harga Rp${harga.toLocaleString('id-ID')}`;
-      const url = `https://wa.me/6282123525841?text=${encodeURIComponent(pesan)}`;
-      window.open(url, '_blank');
-    }
+    fetch(API_URL)
+      .then(res => res.json())
+      .then(data => {
+        let html = "";
+        data.forEach(product => {
+          html += `
+            <div class="card">
+              <img src="${product.gambar}" alt="${product.nama_produk}" />
+              <h3>${product.nama_produk}</h3>
+              <p>${product.detail}</p>
+              <p><strong>Rp${product.harga}</strong></p>
+              <button class="btn-cart" onclick='addToCart(${JSON.stringify(product)})'>🛒 Tambah ke Keranjang</button>
+            </div>
+          `;
+        });
+        document.getElementById("product-list").innerHTML = html;
+      })
+      .catch(() => {
+        document.getElementById("product-list").innerHTML = "Gagal memuat produk.";
+      });
+  </script>
 
-    document.addEventListener('DOMContentLoaded', loadProduk);
-  </script></body>
+</body>
 </html>
